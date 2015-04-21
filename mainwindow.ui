@@ -47,6 +47,18 @@
     <string>Add Wallpaper</string>
    </property>
   </action>
+  <action name="actRemoveWallpaper">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/close_3579.png</normaloff>:/icons/icons/close_3579.png</iconset>
+   </property>
+   <property name="text">
+    <string>Remove Wallpaper</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Wallpaper</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
