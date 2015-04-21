@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/add1-_2843.png</file>
+        <file>icons/add2-_6831.png</file>
+        <file>icons/application_3357.png</file>
+        <file>icons/back_5422.png</file>
+        <file>icons/close_3579.png</file>
+        <file>icons/configure_8635.png</file>
+        <file>icons/documents_1550.png</file>
+        <file>icons/3floppy_unmount_9954.png</file>
+    </qresource>
+</RCC>
