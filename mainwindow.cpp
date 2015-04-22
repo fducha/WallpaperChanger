@@ -9,11 +9,14 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    TRUSTY_FILE_NAME("/usr/share/backgrounds/contest/trusty.xml"),
+    durationStatic(1)
 {
     ui->setupUi(this);
 
     wpModel = 0;
+    durationTrans = 3;
 
     loadTrusty();
 }
@@ -63,6 +66,7 @@ void MainWindow::loadTrusty()
     wpList.clear();
     if (readXmlTrustyFile()) {
         updateModel();
+        ui->sbxDuration->setValue(durationStatic);
     }
 }
 
@@ -132,41 +136,48 @@ void MainWindow::readXmlBackground()
 void MainWindow::readXmlStarttime()
 {
     reader.readNext();
+
+    int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
+
     while (!reader.atEnd()) {
         if (reader.isEndElement()) {
             reader.readNext();
+            QDate d(year, month, day);
+            QTime t(hour, minute, second);
+            starttime.setDate(d);
+            starttime.setTime(t);
             break;
         }
         if (reader.isStartElement()) {
-            QString name = reader.name().toString();
+            //QString name = reader.name().toString();
             if (reader.name() == "year") {
                 // read year
-                QString year = reader.readElementText();
+                year = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "month") {
                 // read month
-                QString month = reader.readElementText();
+                month = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "day") {
                 // read day
-                QString day = reader.readElementText();
+                day = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "hour") {
                 // read hour
-                QString hour = reader.readElementText();
+                hour = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "minute") {
                 // read minute
-                QString minute = reader.readElementText();
+                minute = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "second") {
                 // read second
-                QString second = reader.readElementText();
+                second = reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             }
@@ -188,7 +199,8 @@ void MainWindow::readXmlStatic()
             QString name = reader.name().toString();
             if (reader.name() == "duration") {
                 // read duration
-                DURATION_STATIC = reader.readElementText().toInt();
+                QString dur = reader.readElementText();
+                durationStatic = dur.left(dur.count() - 2).toInt() / 60;
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "file") {
@@ -215,7 +227,8 @@ void MainWindow::readXmlTransition()
             QString name = reader.name().toString();
             if (reader.name() == "duration") {
                 // read duration
-                DURATION_TRANS = reader.readElementText().toInt();
+                //durationTrans =
+                reader.readElementText().toInt();
                 if (reader.isEndElement())
                     reader.readNext();
             } else if (reader.name() == "from") {
@@ -248,6 +261,82 @@ void MainWindow::readXmlUnknown()
     }
 }
 
+bool MainWindow::writeXmlTrustyFile(const QString &fileName)
+{
+    if (wpList.isEmpty())
+        return false;
+
+    QFile file(fileName);
+
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        return false;
+    }
+
+    writer.setDevice(&file);
+    writer.setAutoFormatting(true);
+
+    writer.writeStartDocument();
+    writer.writeStartElement("background");
+
+    writeXmlStarttime();
+    // for-loop write static, transition
+    for (int i = 0; i < wpList.count(); i++) {
+        writeXmlStatic(wpList.at(i));
+        if (i == wpList.count() - 1) {
+            writeXmlTransition(wpList.at(i), wpList.at(0));
+        } else {
+            writeXmlTransition(wpList.at(i), wpList.at(i + 1));
+        }
+    }
+
+    writer.writeEndElement();
+    writer.writeEndDocument();
+
+    file.close();
+
+    return true;
+}
+
+void MainWindow::writeXmlStarttime()
+{
+    writer.writeStartElement("starttime");
+
+    writer.writeTextElement("year", numberAndZero(starttime.date().year()));
+    writer.writeTextElement("month", numberAndZero(starttime.date().month()));
+    writer.writeTextElement("day", numberAndZero(starttime.date().day()));
+    writer.writeTextElement("hour", numberAndZero(starttime.time().hour()));
+    writer.writeTextElement("minute", numberAndZero(starttime.time().minute()));
+    writer.writeTextElement("second", numberAndZero(starttime.time().second()));
+
+    writer.writeEndElement();
+}
+
+void MainWindow::writeXmlStatic(const QString &fileName)
+{
+    writer.writeStartElement("static");
+
+    writer.writeTextElement("duration", QString("%1.0").arg(durationStatic * 60));
+    writer.writeTextElement("file", fileName);
+
+    writer.writeEndElement();
+}
+
+void MainWindow::writeXmlTransition(const QString &fnFrom, const QString &fnTo)
+{
+    writer.writeStartElement("transition");
+
+    writer.writeTextElement("duration", QString("%1.0").arg(durationTrans));
+    writer.writeTextElement("from", fnFrom);
+    writer.writeTextElement("to", fnTo);
+
+    writer.writeEndElement();
+}
+
+QString MainWindow::numberAndZero(int num)
+{
+    return num < 10 ? QString("0%1").arg(num) : QString::number(num);
+}
+
 void MainWindow::on_actRemoveWallpaper_triggered()
 {
     if (ui->lvwWallPapers->currentIndex().isValid()) {
@@ -260,4 +349,19 @@ void MainWindow::on_actRemoveWallpaper_triggered()
             updateModel();
         }
     }
+}
+
+void MainWindow::on_actCloseApp_triggered()
+{
+    close();
+}
+
+void MainWindow::on_actApplyChanges_triggered()
+{
+    writeXmlTrustyFile(/*"trusty.xml"*/TRUSTY_FILE_NAME);
+}
+
+void MainWindow::on_sbxDuration_valueChanged(int value)
+{
+    durationStatic = value;
 }
