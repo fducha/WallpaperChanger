@@ -28,7 +28,32 @@
      <number>3</number>
     </property>
     <item>
-     <widget class="QListView" name="listView"/>
+     <widget class="QListView" name="lvwWallPapers">
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+      <property name="textElideMode">
+       <enum>Qt::ElideMiddle</enum>
+      </property>
+      <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="spacing">
+       <number>-2</number>
+      </property>
+      <property name="viewMode">
+       <enum>QListView::IconMode</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -49,9 +74,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actNewSet"/>
    <addaction name="actAddWallpaper"/>
    <addaction name="actRemoveWallpaper"/>
+   <addaction name="separator"/>
+   <addaction name="actApplyChanges"/>
+   <addaction name="actCloseApp"/>
   </widget>
   <action name="actNewSet">
    <property name="icon">
@@ -80,13 +107,37 @@
   <action name="actRemoveWallpaper">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/icons/icons/close_3579.png</normaloff>:/icons/icons/close_3579.png</iconset>
+     <normaloff>:/icons/icons/package-remove_6801.png</normaloff>:/icons/icons/package-remove_6801.png</iconset>
    </property>
    <property name="text">
     <string>Remove Wallpaper</string>
    </property>
    <property name="toolTip">
     <string>Remove Wallpaper</string>
+   </property>
+  </action>
+  <action name="actApplyChanges">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/checkmark_3348.png</normaloff>:/icons/icons/checkmark_3348.png</iconset>
+   </property>
+   <property name="text">
+    <string>Apply Changes</string>
+   </property>
+   <property name="toolTip">
+    <string>Apply Changes</string>
+   </property>
+  </action>
+  <action name="actCloseApp">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/icons/close_3579.png</normaloff>:/icons/icons/close_3579.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close Application</string>
+   </property>
+   <property name="toolTip">
+    <string>Close Application</string>
    </property>
   </action>
  </widget>

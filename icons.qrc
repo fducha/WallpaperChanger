@@ -8,5 +8,7 @@
         <file>icons/configure_8635.png</file>
         <file>icons/documents_1550.png</file>
         <file>icons/3floppy_unmount_9954.png</file>
+        <file>icons/checkmark_3348.png</file>
+        <file>icons/package-remove_6801.png</file>
     </qresource>
 </RCC>
