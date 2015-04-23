@@ -1,8 +1,10 @@
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QDir>
 #include <QModelIndex>
 #include <QIcon>
 #include <QMessageBox>
+#include <QProcess>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -10,7 +12,6 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    TRUSTY_FILE_NAME("/usr/share/backgrounds/contest/trusty.xml"),
     durationStatic(1)
 {
     ui->setupUi(this);
@@ -72,7 +73,8 @@ void MainWindow::loadTrusty()
 
 bool MainWindow::readXmlTrustyFile()
 {
-    QFile file(TRUSTY_FILE_NAME);
+    QString fn = set.homeDir() + "/trusty.xml";
+    QFile file(fn);
 
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         return false;
@@ -301,6 +303,11 @@ void MainWindow::writeXmlStarttime()
 {
     writer.writeStartElement("starttime");
 
+    if (!starttime.isValid()) {
+        starttime.setDate(QDate::currentDate());
+        starttime.setTime(QTime::currentTime());
+    }
+
     writer.writeTextElement("year", numberAndZero(starttime.date().year()));
     writer.writeTextElement("month", numberAndZero(starttime.date().month()));
     writer.writeTextElement("day", numberAndZero(starttime.date().day()));
@@ -332,6 +339,19 @@ void MainWindow::writeXmlTransition(const QString &fnFrom, const QString &fnTo)
     writer.writeEndElement();
 }
 
+bool MainWindow::launchProcessSetWallPaperSet()
+{
+    QProcess pr;
+    QString app = "gsettings";
+    QStringList args;
+    args.append("set");
+    args.append("org.gnome.desktop.background");
+    args.append("picture-uri");
+    args.append(QString("'file://%1/trusty.xml'").arg(set.homeDir()));
+    pr.start(app, args);
+    return pr.waitForFinished();
+}
+
 QString MainWindow::numberAndZero(int num)
 {
     return num < 10 ? QString("0%1").arg(num) : QString::number(num);
@@ -358,7 +378,13 @@ void MainWindow::on_actCloseApp_triggered()
 
 void MainWindow::on_actApplyChanges_triggered()
 {
-    writeXmlTrustyFile(/*"trusty.xml"*/TRUSTY_FILE_NAME);
+    if (set.homeDir().isEmpty()) {
+        //QMessageBox::information(this, "", QDir::homePath());
+        QDir::home().mkdir(".WallPaperChanger");
+        set.setHomeDir(QDir::homePath() + "/.WallPaperChanger");
+    }
+    writeXmlTrustyFile(set.homeDir() + "/" +"trusty.xml");
+    launchProcessSetWallPaperSet();
 }
 
 void MainWindow::on_sbxDuration_valueChanged(int value)

@@ -7,6 +7,8 @@
 #include <QXmlStreamWriter>
 #include <QDateTime>
 
+#include "classes/appsettings.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -41,6 +43,8 @@ private:
     QXmlStreamReader reader;
     QXmlStreamWriter writer;
 
+    AppSettings set;
+
     bool readXmlTrustyFile();
     void readXmlBackground();
     void readXmlStarttime();
@@ -53,7 +57,8 @@ private:
     void writeXmlStatic(const QString &fileName);
     void writeXmlTransition(const QString &fnFrom, const QString &fnTo);
 
-    const QString TRUSTY_FILE_NAME;
+    bool launchProcessSetWallPaperSet();
+
     int durationStatic;
     int durationTrans;
 
