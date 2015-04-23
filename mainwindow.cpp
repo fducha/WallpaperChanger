@@ -41,13 +41,11 @@ void MainWindow::on_actAddWallpaper_triggered()
 
 void MainWindow::updateModel()
 {
-    if (wpModel) {
-        delete wpModel;
-        wpModel = 0;
+    if (!wpModel) {
+        wpModel = new QStandardItemModel(wpList.count(), 1);
+    } else {
+        wpModel->setRowCount(wpList.count());
     }
-
-    wpModel = new QStandardItemModel(wpList.count(), 1);
-
 
     for (int i = 0; i < wpModel->rowCount(); ++i) {
         QModelIndex index = wpModel->index(i, 0);
