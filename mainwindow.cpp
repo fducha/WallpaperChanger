@@ -381,9 +381,11 @@ void MainWindow::on_actApplyChanges_triggered()
         QDir::home().mkdir(".WallPaperChanger");
         set.setHomeDir(QDir::homePath() + "/.WallPaperChanger");
     }
-    if (writeXmlTrustyFile(set.homeDir() + "/" +"trusty.xml"))
-        launchProcessSetWallPaperSet();
-    else {
+    if (writeXmlTrustyFile(set.homeDir() + "/" +"trusty.xml")) {
+        if (launchProcessSetWallPaperSet()) {
+            QMessageBox::information(this, tr(""), tr("The current set of WallPapers is installed"));
+        }
+    } else {
         QMessageBox::information(this, tr(""), tr("The set of WallPapers is empty"));
     }
 }
