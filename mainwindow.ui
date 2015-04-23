@@ -113,6 +113,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actNewSet"/>
    <addaction name="actAddWallpaper"/>
    <addaction name="actRemoveWallpaper"/>
    <addaction name="separator"/>

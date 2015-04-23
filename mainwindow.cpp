@@ -383,11 +383,20 @@ void MainWindow::on_actApplyChanges_triggered()
         QDir::home().mkdir(".WallPaperChanger");
         set.setHomeDir(QDir::homePath() + "/.WallPaperChanger");
     }
-    writeXmlTrustyFile(set.homeDir() + "/" +"trusty.xml");
-    launchProcessSetWallPaperSet();
+    if (writeXmlTrustyFile(set.homeDir() + "/" +"trusty.xml"))
+        launchProcessSetWallPaperSet();
+    else {
+        QMessageBox::information(this, tr(""), tr("The set of WallPapers is empty"));
+    }
 }
 
 void MainWindow::on_sbxDuration_valueChanged(int value)
 {
     durationStatic = value;
+}
+
+void MainWindow::on_actNewSet_triggered()
+{
+    wpList.clear();
+    updateModel();
 }

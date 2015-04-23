@@ -32,6 +32,8 @@ private slots:
     void updateModel();
     void loadTrusty();
 
+    void on_actNewSet_triggered();
+
 private:
     Ui::MainWindow *ui;
 
